@@ -1,0 +1,16 @@
+<title>Plasma</title>
+
+<fshader plasma>
+uniform vec2 resolution;
+uniform float time;
+
+void main(void)
+{
+	vec2 p = gl_FragCoord.xy / resolution.xy * 2.0 - 1.0;
+	
+	float v = ((sin(p.x * 5.0 + time) * cos(p.y * 13.0 + time * 3.0)) + (sin(p.x * 7.0 + time) * sin(p.y * p.x * 11.0 + time * dot(p,p))) + (sin(p.x * 137.0 + time) / cos(p.y * 10000.0))) / 2.0 + 0.5;
+	gl_FragColor = vec4(0.0, v, (0.3-v) * sin(dot(p,p)*p.x*p.y+time*0.5), 1.0);
+}
+</fshader>
+
+<program>plasma</program>

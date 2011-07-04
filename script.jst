@@ -1,0 +1,85 @@
+<% if drawMulti %>
+if(!window.requestAnimationFrame) {
+	window.requestAnimationFrame = (function() {
+		return window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function(callback, element ) {
+			window.setTimeout(callback, 1000 / 60);
+		};
+	})();
+}
+<% end %>
+
+var b, cvs, gl, v<% if drawMulti %>, ot = (new Date()).getTime()<% end %>;
+<% if programs.size != 0 %>
+var <%= programs.keys.join ', ' %>;
+<% end %>
+function r() {
+	cvs = document.getElementById('c');
+	b = document.body;
+	gl = cvs.getContext('experimental-webgl');
+	function resize() {
+		cvs.width = cvs.width = 1;
+		gl.viewportWidth = cvs.width = b.clientWidth;
+		gl.viewportHeight = cvs.height = b.clientHeight-cvs.offsetTop;
+		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+		<% if not drawMulti %>d();<% end %>
+	}
+	
+	<% if (fshaders.size + vshaders.size) != 0 %>
+	var <%= fshaders.keys.map{|x| x + ' = cs(' + fshaders[x].jsstr + ', 1)'}.join ', ' %>;
+	var <%= vshaders.keys.map{|x| x + ' = cs(' + vshaders[x].jsstr + ', 0)'}.join ', ' %>;
+	<% end %>
+	
+	<% programs.each do |p, k| %>
+		<%= p %> = gl.createProgram();
+		<% k.each do |x| %>
+			gl.attachShader(<%= p %>, <%= x %>);
+		<% end %>
+		gl.linkProgram(<%= p %>);
+		if(!gl.getProgramParameter(<%= p %>, gl.LINK_STATUS))
+			abort(alert("Could not initialise shaders"));
+	<% end %>
+	
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.enable(gl.DEPTH_TEST);
+	
+	v = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, v);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ -1., -1.,   1., -1.,    -1.,  1.,     1., -1.,    1.,  1.,    -1.,  1.]), gl.STATIC_DRAW);
+	
+	window.onresize = resize;
+	resize();
+	d();
+}
+
+function cs(s, t) {
+	var so = gl.createShader(t>0?gl.FRAGMENT_SHADER:gl.VERTEX_SHADER);
+	gl.shaderSource(so, s);
+	gl.compileShader(so);
+	if(!gl.getShaderParameter(so, gl.COMPILE_STATUS))
+		abort(alert(gl.getShaderInfoLog(so)));
+	return so;
+}
+
+function d() {
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	gl.useProgram(main);
+	var a = gl.getAttribLocation(main, 'pos');
+	<% if drawMulti %>
+	gl.uniform1f(gl.getUniformLocation(main, 'time'), ((new Date()).getTime()-ot) / 1000.0);
+	<% end %>
+	gl.uniform2f(gl.getUniformLocation(main, 'resolution'), gl.viewportWidth, gl.viewportHeight);
+	gl.bindBuffer(gl.ARRAY_BUFFER, v);
+	gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(a);
+	gl.drawArrays(gl.TRIANGLES, 0, 6);
+	gl.disableVertexAttribArray(a);
+	
+	<% if drawMulti %>
+	window.requestAnimationFrame(d, cvs);
+	<% end %>
+}

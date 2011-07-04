@@ -1,8 +1,8 @@
-<title>Test</title>
+<title>Raymarch</title>
 
 <singleframe>
 
-<fshader test>
+<fshader raymarch>
 uniform vec2 resolution;
 uniform float time;
 
@@ -64,4 +64,4 @@ void main(void)
 }
 </fshader>
 
-<program>test</program>
+<program>raymarch</program>

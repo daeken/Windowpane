@@ -1,8 +1,5 @@
 require 'erb'
 require 'jsmin'
-require 'sinatra'
-require 'sinatra/reloader'
-require 'pp'
 
 class String
 	def jsstr
@@ -73,6 +70,16 @@ def build(fn)
 	doc
 end
 
-get '/' do
-	build ARGV[0]
+if ARGV.size == 0
+	puts 'Usage: ruby windowpane.rb <demo.wpd> [<output.html>]'
+	puts 'If you leave off the output file, Windowpane operates in server mode on port 4567'
+elsif ARGV.size == 1
+	require 'sinatra'
+	require 'sinatra/reloader'
+	
+	get '/' do
+		build ARGV[0]
+	end
+else
+	File.open(ARGV[1], 'w').write(build ARGV[0])
 end

@@ -1,0 +1,29 @@
+<title>Concentric</title>
+
+<fshader conc>
+uniform vec2 resolution;
+uniform float time;
+
+vec4 c(float x) {
+	return vec4(x, x*0.9, x*1.1, 1.0);
+}
+
+float f(vec2 p, float t) {
+	p *= cos(sqrt(dot(p,p))) * sin(t / 2.0 + length(p));
+	p = tan(mod(sqrt(p) + 1.0, 0.05) * 10.0);
+	
+	if(p.x >= p.y)
+		return sin(p.y/p.x);
+	else
+		return cos(p.x/p.y/sin(t/2.0));
+}
+
+void main(void)
+{
+	vec2 p = gl_FragCoord.xy / resolution.xy * 4.0 - 2.0;
+	p *= atan(0.1 / dot(p,p)) * sqrt(p.x/p.y) * sqrt(p.y/p.x);
+	gl_FragColor = c(1.0-(f(p, time) * 0.5 + f(p, time-0.5/2.0) * 0.25 + f(p, time-0.75/2.0) * 0.125 + f(p, time-0.875/2.0) * 0.0625 + f(p, time-0.9375/2.0) * 0.0625));
+}
+</fshader>
+
+<program>conc</program>

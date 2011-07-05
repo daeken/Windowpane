@@ -44,7 +44,6 @@ function r() {
 	<% end %>
 	
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	gl.enable(gl.DEPTH_TEST);
 	
 	v = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, v);
@@ -65,8 +64,6 @@ function cs(s, t) {
 }
 
 function d() {
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
 	gl.useProgram(main);
 	var a = gl.getAttribLocation(main, 'pos');
 	<% if drawMulti %>

@@ -64,12 +64,12 @@ function cs(s, t) {
 }
 
 function d() {
-	gl.useProgram(main);
-	var a = gl.getAttribLocation(main, 'pos');
+	gl.useProgram(<%=remap['main'] %>);
+	var a = gl.getAttribLocation(<%=remap['main'] %>, 'pos');
 	<% if drawMulti %>
-	gl.uniform1f(gl.getUniformLocation(main, 'time'), ((new Date()).getTime()-ot) / 1000.0);
+	gl.uniform1f(gl.getUniformLocation(<%=remap['main'] %>, 'time'), ((new Date()).getTime()-ot) / 1000.0);
 	<% end %>
-	gl.uniform2f(gl.getUniformLocation(main, 'resolution'), gl.viewportWidth, gl.viewportHeight);
+	gl.uniform2f(gl.getUniformLocation(<%=remap['main'] %>, 'resolution'), gl.viewportWidth, gl.viewportHeight);
 	gl.bindBuffer(gl.ARRAY_BUFFER, v);
 	gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(a);

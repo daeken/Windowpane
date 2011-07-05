@@ -75,6 +75,7 @@ def build(fn)
 	end
 	update = /<update>(.*?)<\/update>/m.match(file) { |m| m[1].strip } || nil
 	drawMulti = (file =~ /<singleframe>/) == nil
+	errorChecking = (file =~ /<checkerrors>/) != nil
 	
 	tprograms.each do |k, v|
 		next if v.size != 1
@@ -124,8 +125,6 @@ def build(fn)
 			vshaders.delete k
 		end
 	end
-	
-	errorChecking = false
 	
 	script = ERB.new(File.read('script.jst')).result(binding)
 	script = JSMin.minify script

@@ -1,4 +1,4 @@
-var b, y, z, g, v<% if drawMulti %>, o = (new Date()).getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
+var <% if errorChecking %> a = alert, <% end %> b, y, z, g, v<% if drawMulti %>, o = (new Date()).getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
 function r() {
 	z = document.getElementById(9);
 	b = document.body;
@@ -9,13 +9,12 @@ function r() {
 	<% end %>
 	
 	<% programs.each do |p, k| %>
-		<%= p %> = g.createProgram();
-		<% k.each do |x| %>
-			g.attachShader(<%= p %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)' else x end %>);
+		<% k.each_index do |xi| x = k[xi] %>
+			g.attachShader(<% if xi == 0 %> <%= p %> = g.createProgram() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)' else x end %>);
 		<% end %>
 		g.linkProgram(<%= p %>)<% if errorChecking %>;
 		if(!g.getProgramParameter(<%= p %>, g.LINK_STATUS))
-			_a(alert("Could not initialise shaders")); <% end %>
+			a("Could not initialise shaders"); <% end %>
 		<% end %>
 	
 	g.bindBuffer(g.ARRAY_BUFFER, v = g.createBuffer());
@@ -33,7 +32,7 @@ function s(s, t) {
 	g.compileShader(y);
 	<% if errorChecking %>
 	if(!g.getShaderParameter(y, g.COMPILE_STATUS))
-		_a(alert(g.getShaderInfoLog(y)));
+		a(g.getShaderInfoLog(y));
 	<% end %>
 	return y
 }

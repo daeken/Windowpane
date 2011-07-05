@@ -130,6 +130,7 @@ def build(fn)
 	script = JSMin.minify script
 	script.gsub! /\}\n/, '}'
 	script.gsub! /\n\{/, '{'
+	script.strip!
 	
 	doc = %Q{<title>#{title}</title><script>#{script}</script><body onload="r()" style="margin:0px;overflow:hidden"><canvas id="9" style="width:100%;height:100%">}
 	puts "Size: #{doc.size} bytes"

@@ -57,6 +57,7 @@ $defaultTransform = %q{
 }
 
 def build(fn)
+	$i = 0
 	file = File.read(fn)
 	
 	title = /<title>(.*?)<\/title>/m.match(file) { |m| m[1].strip } || fn
@@ -100,10 +101,38 @@ def build(fn)
 		fshaders[remap[k]] = v if remap.include? k
 	end
 	
-	script = ERB.new(File.read('script.jst')).result(binding)
-	#script = JSMin.minify script
+	count = {}
+	programs.each do |k, v|
+		v.each do |x|
+			if not count.include? x
+				count[x] = 1
+			else
+				count[x] += 1
+			end
+		end
+	end
 	
-	doc = %Q{<!doctype html><title>#{title}</title><script>#{script}</script><body onload="r()" style="width:100%;height:100%;border:0px;padding:0px;margin:0px;overflow:hidden"><canvas id="c" style="width:100%;height:100%">}
+	fshadersinline = {}
+	vshadersinline = {}
+	count.each do |k, v|
+		next if v != 1
+		if fshaders.include? k
+			fshadersinline[k] = fshaders[k]
+			fshaders.delete k
+		else
+			vshadersinline[k] = vshaders[k]
+			vshaders.delete k
+		end
+	end
+	
+	errorChecking = false
+	
+	script = ERB.new(File.read('script.jst')).result(binding)
+	script = JSMin.minify script
+	script.gsub! /\}\n/, '}'
+	script.gsub! /\n\{/, '{'
+	
+	doc = %Q{<title>#{title}</title><script>#{script}</script><body onload="r()" style="margin:0px;overflow:hidden"><canvas id="9" style="width:100%;height:100%">}
 	puts "Size: #{doc.size} bytes"
 	doc
 end

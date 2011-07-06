@@ -24,6 +24,7 @@ def shadermin(shader)
 	shader.gsub! /\/\*.*?\*\//, ''
 	shader.gsub! /\.0+([^0-9])/, '.\1'
 	shader.gsub! /\s*(;|{|}|\(|\)|=|\+|-|\*|\/|\[|\]|,|\.|%|!|~|\?|:)\s*/m, '\1'
+	shader.strip!
 	shader
 end
 
@@ -46,7 +47,7 @@ def createIdentifier
 	'$' + ident
 end
 
-$defaultTransform = %q{
+$defaultTransform = shadermin %q{
 	attribute vec2 pos;
 	varying vec2 p;
 	

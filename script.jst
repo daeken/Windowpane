@@ -1,8 +1,9 @@
-var <% if errorChecking %> a = alert, <% end %> b, y, z, g, v<% if drawMulti %>, o = (new Date()).getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
+var <% if errorChecking %> a = alert, <% end %> x, b, y, z, g, v<% if drawMulti %>, o = (new Date()).getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
 function r() {
 	z = document.getElementById(9);
 	b = document.body;
 	g = z.getContext('experimental-webgl');
+	x = g.ARRAY_BUFFER;
 	
 	<% if (fshaders.size + vshaders.size) != 0 %>
 	var <%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 1)'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 0)'}.join ', ' %>;
@@ -17,8 +18,8 @@ function r() {
 			a("Could not initialise shaders"); <% end %>
 		<% end %>
 	
-	g.bindBuffer(g.ARRAY_BUFFER, v = g.createBuffer());
-	g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1]), g.STATIC_DRAW);
+	g.bindBuffer(x, v = g.createBuffer());
+	g.bufferData(x, new Float32Array([-1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1]), g.STATIC_DRAW);
 	
 	(window.onresize = function() {
 		z.width = 1;
@@ -44,7 +45,7 @@ function d() {
 	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), ((new Date()).getTime()-o) / 1000);
 	<% end %>
 	g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), g.viewportWidth, g.viewportHeight);
-	g.bindBuffer(g.ARRAY_BUFFER, v);
+	g.bindBuffer(x, v);
 	g.vertexAttribPointer(a, 2, g.FLOAT, 0, 0, 0);
 	g.enableVertexAttribArray(a);
 	g.drawArrays(g.TRIANGLES, 0, 6)<% if drawMulti %>;

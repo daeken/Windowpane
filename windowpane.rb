@@ -22,7 +22,7 @@ def shadermin(shader)
 	shader.gsub! /\/\/.*$/, ''
 	shader.gsub! /\s+/m, ' '
 	shader.gsub! /\/\*.*?\*\//, ''
-	shader.gsub! /\.0+([^1-9])/, '.\1'
+	shader.gsub! /\.0+([^0-9])/, '.\1'
 	shader.gsub! /\s*(;|{|}|\(|\)|=|\+|-|\*|\/|\[|\]|,|\.|%|!|~|\?|:)\s*/m, '\1'
 	shader
 end

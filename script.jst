@@ -1,4 +1,4 @@
-var <% if errorChecking %> a = alert, <% end %> x, b, y, z, g, v<% if drawMulti %>, o = new Date().getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
+var <% if errorChecking %> a = alert, <% end %> x, b, y, z, g, v<% if drawMulti %>, o<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
 function r() {
 	z = document.getElementById(9);
 	b = document.body;
@@ -43,17 +43,15 @@ function d() {
 	g.useProgram(<%=remap['main'] %>);
 	var a = g.getAttribLocation(<%=remap['main'] %>, 'pos');
 	<% if drawMulti %>
-	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), (new Date().getTime()-o) / 1000);
+	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), (new Date().getTime()-(o=o?o:new Date().getTime())) / 1000);
 	<% end %>
 	g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), g.viewportWidth, g.viewportHeight);
 	g.bindBuffer(x, v);
 	g.vertexAttribPointer(a, 2, g.FLOAT, 0, 0, 0);
 	g.enableVertexAttribArray(a);
 	g.drawArrays(g.TRIANGLES, 0, 6)<% if drawMulti %>;
-	(window.requestAnimationFrame || 
-		window.webkitRequestAnimationFrame ||
+	(window.webkitRequestAnimationFrame ||
 		window.mozRequestAnimationFrame ||
-		window.oRequestAnimationFrame ||
 		function(c) {
 			setTimeout(c, 50 / 3);
 		})(d, z)

@@ -1,4 +1,4 @@
-var <% if errorChecking %> a = alert, <% end %> x, b, y, z, g, v<% if drawMulti %>, o = (new Date()).getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
+var <% if errorChecking %> a = alert, <% end %> x, b, y, z, g, v<% if drawMulti %>, o = new Date().getTime()<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
 function r() {
 	z = document.getElementById(9);
 	b = document.body;
@@ -23,7 +23,8 @@ function r() {
 	
 	(window.onresize = function() {
 		z.width = 1;
-		g.viewport(0, 0, (g.viewportWidth = z.width = b.clientWidth), (g.viewportHeight = z.height = b.clientHeight-z.offsetTop))<% if not drawMulti %>; d()<% end %>
+		g.viewport(0, 0, (g.viewportWidth = z.width = b.clientWidth), (g.viewportHeight = z.height = b.clientHeight-z.offsetTop))<% if not drawMulti %>;
+		d()<% end %>
 	})()<% if drawMulti %>;
 	d()<% end %>
 }
@@ -42,7 +43,7 @@ function d() {
 	g.useProgram(<%=remap['main'] %>);
 	var a = g.getAttribLocation(<%=remap['main'] %>, 'pos');
 	<% if drawMulti %>
-	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), ((new Date()).getTime()-o) / 1000);
+	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), (new Date().getTime()-o) / 1000);
 	<% end %>
 	g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), g.viewportWidth, g.viewportHeight);
 	g.bindBuffer(x, v);

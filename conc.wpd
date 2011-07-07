@@ -17,7 +17,7 @@ float f(vec2 p, float t) {
 	return sin(p.y/p.x) * cos(p.x/p.y/sin(p.x));
 }
 
-void main(void)
+void main()
 {
 	vec2 p = gl_FragCoord.xy / resolution.xy * 4.0 - 2.0;
 	p *= atan(0.1 / dot(p,p)) * q(p.x/p.y) * q(p.y/p.x);

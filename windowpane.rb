@@ -23,7 +23,8 @@ def shadermin(shader)
 	shader.gsub! /\s+/m, ' '
 	shader.gsub! /\/\*.*?\*\//, ''
 	shader.gsub! /\.0+([^0-9])/, '.\1'
-	shader.gsub! /\s*(;|{|}|\(|\)|=|\+|-|\*|\/|\[|\]|,|\.|%|!|~|\?|:)\s*/m, '\1'
+	shader.gsub! /([^a-z0-9])0+([0-9]*\.[1-9])/i, '\1\2'
+	shader.gsub! /\s*(;|{|}|\(|\)|=|\+|-|\*|\/|\[|\]|,|\.|%|!|~|\?|:|<|>)\s*/m, '\1'
 	shader.strip!
 	shader
 end
@@ -143,7 +144,11 @@ if ARGV.size == 0
 	puts 'If you leave off the output file, Windowpane operates in server mode on port 4567'
 elsif ARGV.size == 1
 	require 'sinatra'
-	require 'sinatra/reloader'
+	begin
+		require 'sinatra/reloader'
+	rescue LoadError
+		puts 'No reloading support'
+	end
 	
 	get '/' do
 		build ARGV[0]

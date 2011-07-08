@@ -1,17 +1,17 @@
-var <% if errorChecking %> a = alert, <% end %> x, b, y, z, g, v<% if drawMulti %>, o<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
+var <% if errorChecking %> a = alert, <% end %> w, x, b, y, z, g, v<% if drawMulti %>, o<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
 function r() {
-	z = document.getElementById(9);
 	b = document.body;
+	z = b.firstChild;
 	g = z.getContext('experimental-webgl');
 	x = g.ARRAY_BUFFER;
 	
 	<% if (fshaders.size + vshaders.size) != 0 %>
-	var <%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 1)'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 0)'}.join ', ' %>;
+	<%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 1)||y'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 0)||y'}.join ', ' %>;
 	<% end %>
 	
 	<% programs.each do |p, k| %>
 		<% k.each_index do |xi| x = k[xi] %>
-			g.attachShader(<% if xi == 0 %> <%= p %> = g.createProgram() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)' else x end %>);
+			g.attachShader(<% if xi == 0 %> <%= p %> = g.createProgram() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)||y' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)||y' else x end %>);
 		<% end %>
 		g.linkProgram(<%= p %>)<% if errorChecking %>;
 		if(!g.getProgramParameter(<%= p %>, g.LINK_STATUS))
@@ -30,28 +30,24 @@ function r() {
 }
 
 function s(s, t) {
-	g.shaderSource(y = g.createShader(t>0?g.FRAGMENT_SHADER:g.VERTEX_SHADER), s);
-	g.compileShader(y);
-	<% if errorChecking %>
+	g.shaderSource(y = g.createShader(t?g.FRAGMENT_SHADER:g.VERTEX_SHADER), s);
+	g.compileShader(y)<% if errorChecking %>;
 	if(!g.getShaderParameter(y, g.COMPILE_STATUS))
-		a(g.getShaderInfoLog(y));
+		a(g.getShaderInfoLog(y))
 	<% end %>
-	return y
 }
 
 function d() {
 	g.useProgram(<%=remap['main'] %>);
-	var a = g.getAttribLocation(<%=remap['main'] %>, 'pos');
 	<% if drawMulti %>
 	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), (new Date().getTime()-(o=o?o:new Date().getTime())) / 1000);
 	<% end %>
 	g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), g.viewportWidth, g.viewportHeight);
 	g.bindBuffer(x, v);
-	g.vertexAttribPointer(a, 2, g.FLOAT, 0, 0, 0);
-	g.enableVertexAttribArray(a);
-	g.drawArrays(g.TRIANGLES, 0, 6)<% if drawMulti %>;
-	(window.webkitRequestAnimationFrame ||
-		window.mozRequestAnimationFrame ||
+	g.vertexAttribPointer(w = g.getAttribLocation(<%=remap['main'] %>, 'p'), 2, g.FLOAT);
+	g.drawArrays(g.TRIANGLES, g.enableVertexAttribArray(w), 6)<% if drawMulti %>;
+	(webkitRequestAnimationFrame ||
+		mozRequestAnimationFrame ||
 		function(c) {
 			setTimeout(c, 50 / 3);
 		})(d, z)

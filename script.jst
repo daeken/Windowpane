@@ -1,4 +1,4 @@
-var <% if errorChecking %> a = alert, <% end %> w, x, b, y, z, g, v<% if drawMulti %>, o<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
+var <% if errorChecking %> a = alert, <% end %> e, f, t=window, w, x, b, y, z, g, v<% if drawMulti %>, o<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
 function r() {
 	b = document.body;
 	z = b.firstChild;
@@ -19,11 +19,11 @@ function r() {
 		<% end %>
 	
 	g.bindBuffer(x, v = g.createBuffer());
-	g.bufferData(x, new Float32Array([-1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1]), g.STATIC_DRAW);
+	g.bufferData(x, new Float32Array([0, 0, 2, 0, 0, 2, 2, 0, 2, 2, 0, 2]), g.STATIC_DRAW);
 	
-	(window.onresize = function() {
+	(t.onresize = function() {
 		z.width = 1;
-		g.viewport(0, 0, (g.viewportWidth = z.width = b.clientWidth), (g.viewportHeight = z.height = b.clientHeight-z.offsetTop))<% if not drawMulti %>;
+		g.viewport(0, 0, (e = g.viewportWidth = z.width = b.clientWidth), (f = g.viewportHeight = z.height = b.clientHeight-z.offsetTop))<% if not drawMulti %>;
 		d()<% end %>
 	})()<% if drawMulti %>;
 	d()<% end %>
@@ -39,15 +39,21 @@ function s(s, t) {
 
 function d() {
 	g.useProgram(<%=remap['main'] %>);
-	<% if drawMulti %>
-	g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), (new Date().getTime()-(o=o?o:new Date().getTime())) / 1000);
-	<% end %>
-	g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), g.viewportWidth, g.viewportHeight);
-	g.bindBuffer(x, v);
-	g.vertexAttribPointer(w = g.getAttribLocation(<%=remap['main'] %>, 'p'), 2, g.FLOAT);
+	g.vertexAttribPointer(
+		w = g.getAttribLocation(<%=remap['main'] %>, 'p'), 
+		2, 
+		g.FLOAT, 
+		g.bindBuffer(x, v), 
+		g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), e, f), 
+		<% if drawMulti %>
+		g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), ((m=new Date().getTime())-(o=o||m)) / 1e3)
+		<% else %>
+		0
+		<% end %>
+	);
 	g.drawArrays(g.TRIANGLES, g.enableVertexAttribArray(w), 6)<% if drawMulti %>;
-	(webkitRequestAnimationFrame ||
-		mozRequestAnimationFrame ||
+	(t.webkitRequestAnimationFrame ||
+		t.mozRequestAnimationFrame ||
 		function(c) {
 			setTimeout(c, 50 / 3);
 		})(d, z)

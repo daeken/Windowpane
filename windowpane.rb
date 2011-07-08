@@ -23,7 +23,9 @@ def shadermin(shader)
 	shader.gsub! /\s+/m, ' '
 	shader.gsub! /\/\*.*?\*\//, ''
 	shader.gsub! /\.0+([^0-9])/, '.\1'
-	shader.gsub! /\s*(;|{|}|\(|\)|=|\+|-|\*|\/|\[|\]|,|\.|%|!|~|\?|:)\s*/m, '\1'
+	shader.gsub! /0+([1-9]+\.[^a-z_])/i, '\1'
+	shader.gsub! /0+([1-9]*\.[0-9])/, '\1'
+	shader.gsub! /\s*(;|{|}|\(|\)|=|\+|-|\*|\/|\[|\]|,|\.|%|!|~|\?|:|<|>)\s*/m, '\1'
 	shader.strip!
 	shader
 end
@@ -48,10 +50,10 @@ def createIdentifier
 end
 
 $defaultTransform = shadermin %q{
-	attribute vec2 p;
+	attribute vec3 p;
 	
 	void main(void) {
-		gl_Position = vec4(p.xy, 0.0, 1.0);
+		gl_Position = vec4(p.xyz-1.0, 1.0);
 	}
 }
 
@@ -131,7 +133,7 @@ def build(fn)
 	script.gsub! /\n\{/, '{'
 	script.strip!
 	
-	doc = %Q{<title>#{title}</title><script>#{script}</script><body onload="r()" style="margin:0px;overflow:hidden"><canvas style="width:100%;height:100%">}
+	doc = %Q{<title>#{title}</title><script>#{script}</script><body onload=r() style=margin:0;overflow:hidden><canvas>}
 	puts "Size: #{doc.size} bytes"
 	doc
 end

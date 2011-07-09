@@ -1,61 +1,57 @@
-var <% if errorChecking %> a = alert, <% end %> e, f, t=window, w, x, b, y, z, g, v<% if drawMulti %>, o<% end %><% if programs.size != 0 %>, <%= programs.keys.join ', ' %><% end %>;
-function r() {
-	b = document.body;
-	z = b.firstChild;
-	g = z.getContext('experimental-webgl');
-	x = g.ARRAY_BUFFER;
-	
-	<% if (fshaders.size + vshaders.size) != 0 %>
-	<%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 1)||y'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 0)||y'}.join ', ' %>;
-	<% end %>
-	
-	<% programs.each do |p, k| %>
-		<% k.each_index do |xi| x = k[xi] %>
-			g.attachShader(<% if xi == 0 %> <%= p %> = g.createProgram() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)||y' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)||y' else x end %>);
-		<% end %>
-		g.linkProgram(<%= p %>)<% if errorChecking %>;
-		if(!g.getProgramParameter(<%= p %>, g.LINK_STATUS))
-			a("Could not initialise shaders"); <% end %>
-		<% end %>
-	
-	g.bindBuffer(x, v = g.createBuffer());
-	g.bufferData(x, new Float32Array([0, 0, 2, 0, 0, 2, 2, 0, 2, 2, 0, 2]), g.STATIC_DRAW);
-	
-	(t.onresize = function() {
-		z.width = 1;
-		g.viewport(0, 0, (e = g.viewportWidth = z.width = b.clientWidth), (f = g.viewportHeight = z.height = b.clientHeight-z.offsetTop))<% if not drawMulti %>;
-		d()<% end %>
-	})()<% if drawMulti %>;
-	d()<% end %>
-}
-
 function s(s, t) {
-	g.shaderSource(y = g.createShader(t?g.FRAGMENT_SHADER:g.VERTEX_SHADER), s);
-	g.compileShader(y)<% if errorChecking %>;
-	if(!g.getShaderParameter(y, g.COMPILE_STATUS))
-		a(g.getShaderInfoLog(y))
+	deS(y = eeS(35633-t), s);
+	mpeS(y)<% if errorChecking %>;
+	if(!eSdeP(y, 35713))
+		a(eSde(y))
 	<% end %>
 }
 
 function d() {
-	g.useProgram(<%=remap['main'] %>);
-	g.vertexAttribPointer(
-		w = g.getAttribLocation(<%=remap['main'] %>, 'p'), 
+	seP(<%=remap['main'] %>);
+	eexbP(
+		j = eb(<%=remap['main'] %>, 'p'), 
 		2, 
-		g.FLOAT, 
-		g.bindBuffer(x, v), 
-		g.uniform2f(g.getUniformLocation(<%=remap['main'] %>, 'resolution'), e, f), 
+		5126, 
+		dB(x, v), 
+		uniform2f(efm(<%=remap['main'] %>, 'R'), k, f), 
 		<% if drawMulti %>
-		g.uniform1f(g.getUniformLocation(<%=remap['main'] %>, 'time'), ((m=new Date().getTime())-(o=o||m)) / 1e3)
+		uniform1f(efm(<%=remap['main'] %>, 'T'), ((m=new Date)-(q=q||m)) / 1e3)
 		<% else %>
 		0
 		<% end %>
 	);
-	g.drawArrays(g.TRIANGLES, g.enableVertexAttribArray(w), 6)<% if drawMulti %>;
-	(t.webkitRequestAnimationFrame ||
-		t.mozRequestAnimationFrame ||
-		function(c) {
-			setTimeout(c, 50 / 3);
-		})(d, z)
+	w(4, beVeexb(j), 6)<% if drawMulti %>;
+	(t['webkit'+c] || t['moz'+c])(d)
 	<% end %>
 }
+
+<% if errorChecking %> a = alert, <% end %> c='RequestAnimationFrame', t=top, x = 34962, b = document.body, z = b.firstChild, v<% if drawMulti %> = q<% end %> = 0;
+
+for(k in g = z.getContext('experimental-webgl'))
+	t[k] = t[k.slice(1, -5).replace(/[ntlrauicoh]/ig, '')] = g[k].bind && g[k].bind(g);
+
+<% if (fshaders.size + vshaders.size) != 0 %>
+<%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 1)||y'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 0)||y'}.join ', ' %>;
+<% end %>
+
+<% programs.each do |p, k| %>
+	<% k.each_index do |xi| x = k[xi] %>
+		S(<% if xi == 0 %> <%= p %> = eeP() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)||y' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)||y' else x end %>);
+	<% end %>
+	kP(<%= p %>);
+	<% if errorChecking %>
+	if(!ePgmP(<%= p %>, 35714))
+		a('Could not initialise shaders');
+	<% end %>
+<% end %>
+
+(t.onresize = function() {
+	viewport(
+		dB(x, v = eeB()), 
+		ffe(x, new Float32Array('002002202202'.split('')), x+82), 
+		k = z.width = b.clientWidth, 
+		f = z.height = b.clientHeight//-z.offsetTop
+	)<% if not drawMulti %>;
+	d()<% end %>
+})()<% if drawMulti %>;
+d()<% end %>

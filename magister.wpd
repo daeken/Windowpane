@@ -1,31 +1,29 @@
 <title>Magister [Straylight] Just Another WebGL Hacker</title>
 
 <fshader conc>
-uniform vec2 resolution;
-uniform float time;
+uniform vec2 $resolution;
+uniform float $time;
 
-vec4 z(float g, float b) {
-	vec2 p = (gl_FragCoord.xy + vec2(g, b)/3.0) / resolution.xy * 8.0 - 4.0;
-	p *= time / 80.0 + 0.1;
+vec4 z(int g, int b) {
+	float v;
+	vec2 p = (gl_FragCoord.xy + vec2(g, b)/3.0) / $resolution.xy * 8.0 - 4.0;
+	p *= $time / 80.0 + 0.1;
 	p *= dot(p,p);
-	p *= atan(0.1 / dot(p,p)) * sqrt(abs(p.x/p.y)) * sqrt(abs(p.y/p.x));
-	p *= cos(sqrt(dot(p,p))) / pow(time, (time+1.5)*dot(p,p)*1.5);
-	p = tan(mod(sqrt(abs(p)), 0.05) * 10.0);
+	p *= atan(0.1 / dot(p,p));
+	p = tan(mod(sqrt(abs(p*cos(sqrt(v=dot(p,p))) / pow($time, ($time+1.5)*v*1.5))), 0.05) * 10.0);
 
-	float v = abs(sin(p.y/p.x) + sin(p.y/p.x/7.0)) * 0.8 * cos(1.0/p.y);
-	v *= min(time / 5.0, 1.0);
-	return v > 0.0 ? vec4(v*1.2, v, v*1.3, 1.0) : vec4(-v*0.2, 0.3*v*sin(time*0.9), -v*0.2, 1.0);
+	v = sin(p.y/p.x) * cos(1.0/p.y) * min($time / 5.0, 1.0) * 0.08;
+	return v > 0.0 ? vec4(v/0.8, v, v/0.7, 1) : vec4(-v*0.2, 0.3*v*sin($time), -v*0.2, 1);
 }
 
 void main()
 {
-	gl_FragColor = (
-		z(0.0, 0.0) + 
-		z(-1.0,  0.0) + z( 1.0,  0.0) + 
-		z( 0.0, -1.0) + z( 0.0,  1.0) + 
-		z(-1.0, -1.0) + z( 1.0,  1.0) + 
-		z(-1.0,  1.0) + z( 1.0, -1.0)
-	) / 9.0;
+	gl_FragColor =
+		z(0, 0) + 
+		z(-1,  0) + z( 1,  0) + 
+		z( 0, -1) + z( 0,  1) + 
+		z(-1, -1) + z( 1,  1) + 
+		z(-1,  1) + z( 1, -1);
 }
 </fshader>
 

@@ -19,6 +19,8 @@ class String
 end
 
 def shadermin(shader)
+	shader.gsub! '$resolution', 'R'
+	shader.gsub! '$time', 'T'
 	shader.gsub! /\/\/.*$/, ''
 	shader.gsub! /\s+/m, ' '
 	shader.gsub! /\/\*.*?\*\//, ''
@@ -52,8 +54,8 @@ end
 $defaultTransform = shadermin %q{
 	attribute vec3 p;
 	
-	void main(void) {
-		gl_Position = vec4(p.xyz-1.0, 1.0);
+	void main() {
+		gl_Position = vec4(p.xyz-1.0, 1);
 	}
 }
 
@@ -64,7 +66,7 @@ def build(fn)
 	title = /<title>(.*?)<\/title>/m.match(file) { |m| m[1].strip } || fn
 	tfshaders = {}
 	file.scan(/<fshader\s(.*?)>(.*?)<\/fshader>/m) do |m|
-		tfshaders[m[0].strip] = "#ifdef GL_ES\nprecision highp float;\n#endif\n" + shadermin(m[1].strip)
+		tfshaders[m[0].strip] = "precision highp float;" + shadermin(m[1].strip) # "#ifdef GL_ES\nprecision highp float;\n#endif\n"
 	end
 	tvshaders = {}
 	file.scan(/<vshader\s(.*?)>(.*?)<\/vshader>/m) do |m|
@@ -131,9 +133,11 @@ def build(fn)
 	script = JSMin.minify script
 	script.gsub! /\}\n/, '}'
 	script.gsub! /\n\{/, '{'
+	script.gsub! /([a-z_0-9])\n/i, '\1;'
+	script.gsub! /\n/, ''
 	script.strip!
 	
-	doc = %Q{<title>#{title}</title><script>#{script}</script><body onload=r() style=margin:0;overflow:hidden><canvas>}
+	doc = %Q{<body style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
 	puts "Size: #{doc.size} bytes"
 	doc
 end

@@ -1,8 +1,8 @@
 function s(s, t) {
-	deS(y = eeS(35633-t), s);
+	deS(y = eeS(35632+t), s);
 	mpeS(y)<% if errorChecking %>;
 	if(!eSdeP(y, 35713))
-		a(eSde(y))
+		alert(eSde(y))
 	<% end %>
 }
 
@@ -21,41 +21,45 @@ function d() {
 		<% end %>
 	);
 	w(4, beVeexb(j), 6)<% if drawMulti %>;
-	<% if png %>
-	(t.webkitRequestAnimationFrame || t.mozRequestAnimationFrame)(d)
-	<% else %>
-	(t['webkit'+c] || t['moz'+c])(d)
-	<% end %>
+	for(k in t) if(k.match(/[tz]..q/)) t[k](d)
 	<% end %>
 }
 
-<% if errorChecking %> a = alert, <% end %> <% if not png %> c='RequestAnimationFrame', t=top, <% end %>x = 34962, b = document.body<% if png %>, b.style.margin='0', b.style.overflow='hidden', b.innerHTML='<canvas>'<% end %>, z = b.firstChild, v<% if drawMulti %> = q<% end %> = 0;
+<% if png %>
+with(document.body) {
+	x = 34962, style.margin=0, style.overflow='hidden', innerHTML='<canvas>', z = firstChild;
+<% else %>
+t = top, x = 34962, b = document.body, z = b.firstChild<% if drawMulti %>, q = 0<% end %>;
+<% end %>
 
 for(k in g = z.getContext('experimental-webgl'))
-	t[k] = t[k.slice(1, -5).replace(/[ntlrauicoh]/ig, '')] = g[k].bind && g[k].bind(g);
+	t[k] = t[k.slice(1, -5).replace(/[ntalruicoh]/ig, '')] = g[k].bind && g[k].bind(g);
 
 <% if (fshaders.size + vshaders.size) != 0 %>
-<%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 1)||y'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 0)||y'}.join ', ' %>;
+<%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 0)||y'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 1)||y'}.join ', ' %>;
 <% end %>
 
 <% programs.each do |p, k| %>
 	<% k.each_index do |xi| x = k[xi] %>
-		S(<% if xi == 0 %> <%= p %> = eeP() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 1)||y' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 0)||y' else x end %>);
+		S(<% if xi == 0 %> <%= p %> = eeP() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 0)||y' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 1)||y' else x end %>);
 	<% end %>
 	kP(<%= p %>);
 	<% if errorChecking %>
 	if(!ePgmP(<%= p %>, 35714))
-		a('Could not initialise shaders');
+		alert('Could not initialise shaders');
 	<% end %>
 <% end %>
 
-(<% if png %>t.<% end %>onresize = function() {
+(onresize = function() {
 	viewport(
 		dB(x, v = eeB()), 
-		ffe(x, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), x+82), 
-		<% if not png %> k = <% end %>z.width = b.clientWidth, 
-		<% if not png %> f = <% end %>z.height = b.clientHeight//-z.offsetTop
+		ffe(x, new Float32Array(<% if png %> [<% if drawMulti and png %>q=<% end %>0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), x+82), 
+		<% if not png %> k = <% end %>z.width = <% unless png %>b.<% end %>clientWidth, 
+		<% if not png %> f = <% end %>z.height = <% unless png %>b.<% end %>clientHeight//-z.offsetTop
 	)<% if not drawMulti %>;
 	d()<% end %>
 })()<% if drawMulti %>;
 d()<% end %>
+<% if png %>
+}
+<% end %>

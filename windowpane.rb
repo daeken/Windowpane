@@ -158,7 +158,7 @@ class MagicChunk < ChunkyPNG::Chunk::Generic
 	end
 end
 
-def buildPng(fn, ofn=nil)
+def buildPng(fn)
 	data = build fn, true
 	fp = File.open('magic.js', 'wb')
 	fp.write(data)
@@ -173,17 +173,15 @@ def buildPng(fn, ofn=nil)
 	data.size.times do |i|
 		png[i, 0] = ChunkyPNG::Color.grayscale(data[i])
 	end
-	ds = png.to_datastream :color_mode => ChunkyPNG::COLOR_GRAYSCALE, :interlace => false
+	ds = png.to_datastream :color_mode => ChunkyPNG::COLOR_GRAYSCALE
 	ds.other_chunks << MagicChunk.new('jawh', html)
-	data = '' + ds.to_blob.to_s
-	if ofn != nil
-		ds.save ofn
-	end
+	data = ds.to_blob.to_s
 	#fp = File.open('test.png', 'wb')
 	#fp.write(data)
 	#fp.close
-	puts "Other PNG size: #{data.size-html.size} bytes"
-	puts "Total compressed size: #{data.size} bytes"
+	tsize = data.bytes.to_a.size
+	puts "Other PNG size: #{tsize-html.size} bytes"
+	puts "Total compressed size: #{tsize} bytes"
 	data
 end
 
@@ -205,7 +203,7 @@ elsif ARGV.size == 1
 	get '/favicon.ico' do end
 else
 	if ARGV.size > 2 and ARGV[2] == 'png'
-		data = buildPng ARGV[0], ARGV[1]
+		File.open(ARGV[1], 'wb').write(buildPng ARGV[0])
 	else
 		File.open(ARGV[1], 'wb').write(build ARGV[0])
 	end

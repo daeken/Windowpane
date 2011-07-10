@@ -1,4 +1,4 @@
-<title>Magister [Straylight] Just Another WebGL Hacker</title>
+<title>magister - just another webgl hacker</title>
 
 <fshader conc>
 uniform vec2 $resolution;

@@ -1,5 +1,7 @@
 require 'erb'
 require 'jsmin'
+require 'chunky_png'
+require 'pp'
 
 class String
 	def jsstr
@@ -32,10 +34,19 @@ def shadermin(shader)
 	shader
 end
 
+def scriptmin(script)
+	script = JSMin.minify script
+	script.gsub! /\}\n/, '}'
+	script.gsub! /\n\{/, '{'
+	script.gsub! /([a-z_0-9])\n/i, '\1;'
+	script.gsub! /\n/, ''
+	script.strip
+end
+
 $i = 0
-$alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'
-$alphanum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789'
-def createIdentifier
+$alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_' # abcdefghijklmnopqrstuvwxyz
+$alphanum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789' # abcdefghijklmnopqrstuvwxyz
+def createIdentifier(x)
 	ident = ''
 	$i += 1
 	ti = $i
@@ -48,7 +59,7 @@ def createIdentifier
 			ti /= $alphanum.size
 		end
 	end
-	'$' + ident
+	ident
 end
 
 $defaultTransform = shadermin %q{
@@ -59,7 +70,7 @@ $defaultTransform = shadermin %q{
 	}
 }
 
-def build(fn)
+def build(fn, png=false)
 	$i = 0
 	file = File.read(fn)
 	
@@ -89,9 +100,9 @@ def build(fn)
 	remap = {}
 	programs = {}
 	tprograms.each do |k, v|
-		remap[k] = createIdentifier
+		remap[k] = createIdentifier(k)
 		programs[remap[k]] = v.map do |x|
-			remap[x] = createIdentifier if not remap.include? x
+			remap[x] = createIdentifier(x) if not remap.include? x
 			remap[x]
 		end
 	end
@@ -129,21 +140,55 @@ def build(fn)
 		end
 	end
 	
-	script = ERB.new(File.read('script.jst')).result(binding)
-	script = JSMin.minify script
-	script.gsub! /\}\n/, '}'
-	script.gsub! /\n\{/, '{'
-	script.gsub! /([a-z_0-9])\n/i, '\1;'
-	script.gsub! /\n/, ''
-	script.strip!
+	script = scriptmin ERB.new(File.read('script.jst')).result(binding)
 	
-	doc = %Q{<body style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
+	if not png
+		doc = %Q{<body style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
+	else
+		doc = script
+	end
 	puts "Size: #{doc.size} bytes"
 	doc
 end
 
+class MagicChunk < ChunkyPNG::Chunk::Generic
+	def write_with_crc(io, content)
+		io << [content.length].pack('N') << type << content
+		io << 'c=#>'
+	end
+end
+
+def buildPng(fn, ofn=nil)
+	data = build fn, true
+	fp = File.open('magic.js', 'wb')
+	fp.write(data)
+	fp.close
+	data = data.reverse.chars.to_a.map { |x| x.ord }
+	script = scriptmin(ERB.new(File.read('bootstrap.jst')).result(binding))
+	puts "Script size: #{script.size} bytes"
+	html = '<img onload=' + script + ' sr'
+	puts "HTML size: #{html.size-script.size} bytes"
+	png = ChunkyPNG::Image.new data.size, 1
+	#png.metadata['foo'] = html
+	data.size.times do |i|
+		png[i, 0] = ChunkyPNG::Color.grayscale(data[i])
+	end
+	ds = png.to_datastream :color_mode => ChunkyPNG::COLOR_GRAYSCALE, :interlace => false
+	ds.other_chunks << MagicChunk.new('jawh', html)
+	data = '' + ds.to_blob.to_s
+	if ofn != nil
+		ds.save ofn
+	end
+	#fp = File.open('test.png', 'wb')
+	#fp.write(data)
+	#fp.close
+	puts "Other PNG size: #{data.size-html.size} bytes"
+	puts "Total compressed size: #{data.size} bytes"
+	data
+end
+
 if ARGV.size == 0
-	puts 'Usage: ruby windowpane.rb <demo.wpd> [<output.html>]'
+	puts 'Usage: ruby windowpane.rb <demo.wpd> [<output.html> [png]]'
 	puts 'If you leave off the output file, Windowpane operates in server mode on port 4567'
 elsif ARGV.size == 1
 	require 'sinatra'
@@ -152,6 +197,16 @@ elsif ARGV.size == 1
 	get '/' do
 		build ARGV[0]
 	end
+
+	get '/png' do
+		buildPng ARGV[0]
+	end
+
+	get '/favicon.ico' do end
 else
-	File.open(ARGV[1], 'w').write(build ARGV[0])
+	if ARGV.size > 2 and ARGV[2] == 'png'
+		data = buildPng ARGV[0], ARGV[1]
+	else
+		File.open(ARGV[1], 'wb').write(build ARGV[0])
+	end
 end

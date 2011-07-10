@@ -21,8 +21,8 @@ class String
 end
 
 def shadermin(shader)
-	shader.gsub! '$resolution', 'R'
-	shader.gsub! '$time', 'T'
+	shader.gsub! '$resolution', 'r'
+	shader.gsub! '$time', 't'
 	shader.gsub! /\/\/.*$/, ''
 	shader.gsub! /\s+/m, ' '
 	shader.gsub! /\/\*.*?\*\//, ''

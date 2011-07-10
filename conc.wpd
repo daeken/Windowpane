@@ -1,8 +1,8 @@
 <title>Concentric -- JAWebGLHacker!</title>
 
 <fshader conc>
-uniform vec2 resolution;
-uniform float time;
+uniform vec2 $resolution;
+uniform float $time;
 
 float f(vec2 p, float t) {
 	float a = sqrt(abs(dot(p,p)))/tan(t/10.0), c=cos(a), s=sin(a);
@@ -16,14 +16,14 @@ float f(vec2 p, float t) {
 
 void main()
 {
-	vec2 p = gl_FragCoord.xy / resolution.xy * 4.0 - 2.0;
+	vec2 p = gl_FragCoord.xy / $resolution.xy * 4.0 - 2.0;
 	p *= atan(0.1 / dot(p,p)) * sqrt(abs(p.x/p.y)) * sqrt(abs(p.y/p.x));
 	float v = 0.0, x=1.0;
 	for(int i = 0; i < 3; ++i) {
-		v += f(p, time+x*0.8) * (x /= 1.9);
+		v += f(p, $time+x*0.8) * (x /= 1.9);
 	}
 	
-	gl_FragColor = vec4(v*1.2, v>0.0?v:0.3*v*cos(time*0.5), v*1.3, 1.0);
+	gl_FragColor = vec4(v*1.2, v>0.0?v:0.3*v*cos($time*0.5), v*1.3, 1.0);
 }
 </fshader>
 

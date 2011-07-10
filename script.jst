@@ -1,39 +1,20 @@
-function s(s, t) {
+s = function(s, t) {
 	deS(y = eeS(35632+t), s);
 	mpeS(y)<% if errorChecking %>;
 	if(!eSdeP(y, 35713))
 		alert(eSde(y))
 	<% end %>
-}
-
-function d() {
-	seP(<%=remap['main'] %>);
-	eexbP(
-		j = eb(<%=remap['main'] %>, 'p'), 
-		2, 
-		5126, 
-		dB(x, v), 
-		uniform2f(efm(<%=remap['main'] %>, 'R'), <% if png %> z.width, z.height <% else %> k, f <% end %>), 
-		<% if drawMulti %>
-		uniform1f(efm(<%=remap['main'] %>, 'T'), ((m=new Date)-(q=q||m)) / 1e3)
-		<% else %>
-		0
-		<% end %>
-	);
-	w(4, beVeexb(j), 6)<% if drawMulti %>;
-	for(k in t) if(k.match(/[tz]..q/)) t[k](d)
-	<% end %>
-}
+};
 
 <% if png %>
 with(document.body) {
-	x = 34962, style.margin=0, style.overflow='hidden', innerHTML='<canvas>', z = firstChild;
+	<% if drawMulti and png %>q=<% end %>style.margin=0, innerHTML='<canvas>', x = 34962, z = firstChild;
 <% else %>
 t = top, x = 34962, b = document.body, z = b.firstChild<% if drawMulti %>, q = 0<% end %>;
 <% end %>
 
 for(k in g = z.getContext('experimental-webgl'))
-	t[k] = t[k.slice(1, -5).replace(/[ntalruicoh]/ig, '')] = g[k].bind && g[k].bind(g);
+	t[k.slice(1, -5).replace(/[ntalruicoh]/ig, '')] = t[k] = g[k].bind && g[k].bind(g);
 
 <% if (fshaders.size + vshaders.size) != 0 %>
 <%= fshaders.keys.map{|x| x + ' = s(' + fshaders[x].jsstr + ', 0)||y'}.join ', ' %><%if fshaders.size != 0 %>, <%end%><%= vshaders.keys.map{|x| x + ' = s(' + vshaders[x].jsstr + ', 1)||y'}.join ', ' %>;
@@ -50,16 +31,37 @@ for(k in g = z.getContext('experimental-webgl'))
 	<% end %>
 <% end %>
 
-(onresize = function() {
+s = function() {
+	<% if not drawMulti %>
+	seP(<%=remap['main'] %>);
+	<% end %>
+	eexbP(
+		j = eb(<%=remap['main'] %>, 'p'), 
+		2, 
+		5126, 
+		<% if drawMulti %> seP(<%=remap['main'] %>) <% else %> 0 <% end %>, 
+		uniform2f(efm(<%=remap['main'] %>, 'r'), <% if png %> z.width, z.height <% else %> r, f <% end %>), 
+		<% if drawMulti %>
+		uniform1f(efm(<%=remap['main'] %>, 't'), ((m=new Date)-(q=q||m)) / 1e3)
+		<% else %>
+		0
+		<% end %>
+	);
+	w(4, beVeexb(j), 6)<% if drawMulti %>;
+	for(k in t) if(/[tz]..q/.test(k)) t[k](s)
+	<% end %>
+};
+
+(t.onresize = function() {
 	viewport(
 		dB(x, v = eeB()), 
-		ffe(x, new Float32Array(<% if png %> [<% if drawMulti and png %>q=<% end %>0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), x+82), 
-		<% if not png %> k = <% end %>z.width = <% unless png %>b.<% end %>clientWidth, 
-		<% if not png %> f = <% end %>z.height = <% unless png %>b.<% end %>clientHeight//-z.offsetTop
+		ffe(x, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), x+82), 
+		<% if not png %> r = <% end %>z.width = <% unless png %>b.<% end %>clientWidth, 
+		<% if not png %> f = <% end %>z.height = <% unless png %>b.<% end %>clientHeight
 	)<% if not drawMulti %>;
-	d()<% end %>
+	s()<% end %>
 })()<% if drawMulti %>;
-d()<% end %>
+s()<% end %>
 <% if png %>
 }
 <% end %>

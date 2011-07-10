@@ -6,7 +6,7 @@ uniform float $time;
 
 vec4 z(int g, int b) {
 	float v;
-	vec2 p = (gl_FragCoord.xy + vec2(g, b)*0.3) / $resolution.xy * 8.0 - 4.0;
+	vec2 p = (gl_FragCoord.xy + vec2(g, b) / 3.0) / $resolution.xy * 8.0 - 4.0;
 	p *= $time * 0.0125 + 0.1;
 	p *= dot(p,p);
 	p *= atan(0.1 / dot(p,p));
@@ -20,10 +20,10 @@ void main()
 {
 	gl_FragColor =
 		z(0, 0) + 
-		z(-1,  0) + z( 1,  0) + 
-		z( 0, -1) + z( 0,  1) + 
-		z(-1, -1) + z( 1,  1) + 
-		z(-1,  1) + z( 1, -1);
+		z( 0,  1) + z( 0, -1) + 
+		z(-1,  0) + z(-1, -1) + 
+		z(-1,  1) + z( 1, -1) + 
+		z( 1,  0) + z( 1,  1);
 }
 </fshader>
 

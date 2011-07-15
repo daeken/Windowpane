@@ -8,7 +8,7 @@ s = function(s, t) {
 
 <% if png %>
 with(document.body) {
-	<% if drawMulti and png %>q=<% end %>style.margin=0, innerHTML='<canvas>', x = 34962, z = firstChild;
+	<% if drawMulti and png %>q=<% end %>style.margin=0, innerHTML='<canvas></canvas><h3 style=position:absolute;bottom:0px;color:#fff;opacity:0.5>1k should be enough for anybody.', x = 34962, z = firstChild;
 <% else %>
 t = top, x = 34962, b = document.body, z = b.firstChild<% if drawMulti %>, q = 0<% end %>;
 <% end %>
@@ -56,8 +56,8 @@ s = function() {
 	viewport(
 		dB(x, v = eeB()), 
 		ffe(x, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), x+82), 
-		<% if not png %> r = <% end %>z.width = <% unless png %>b.<% end %>clientWidth, 
-		<% if not png %> f = <% end %>z.height = <% unless png %>b.<% end %>clientHeight
+		<% if not png %> r = <% end %>z.width = (z.style.width = <% unless png %>b.<% end %>clientWidth)*2,
+		<% if not png %> f = <% end %>z.height = (z.style.height = <% unless png %>b.<% end %>clientHeight)*2
 	)<% if not drawMulti %>;
 	s()<% end %>
 })()<% if drawMulti %>;

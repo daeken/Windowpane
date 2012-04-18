@@ -11,18 +11,52 @@ vec4 z(float z) {
 	p *= z * 0.0125 + 0.1;
 	p *= dot(p,p);
 	p *= atan(0.1 / dot(p,p));
-	p = tan(mod(sqrt(abs(p*cos(sqrt(v=dot(p,p))) / pow(z, (z+1.5)*v*1.5))), 0.05) / 0.1);
-
+	p = tan(
+			mod(
+				sqrt(
+					abs(
+						p*cos(
+							sqrt(v=dot(p,p))
+						) / pow(z, (z+1.5)*v*1.5)
+					)
+				), 0.05
+			) / 0.1
+		);
+	
 	v = sin(p.y/p.x) * cos(1.0/p.y) * min(z*0.2, 1.0) * 0.2;
 	return v > 0.0 ? vec4(v/0.8, v, v*1.5, 1) : vec4(-v*0.2, v*0.3*sin(z), -v*0.2, 1);
 }
 
 void main()
 {
-	gl_FragColor = z(0.0) + 
-		z(0.05) + z(0.1) + 
-		z(-0.05) + z(-0.1);
+	gl_FragColor = z(0.0) + z(0.05) + z(0.1) + z(-0.05) + z(-0.1);
 }
 </fshader>
 
 <program>conc</program>
+
+@vec2 uniform =resolution
+@float uniform =time
+
+:ddot dup dup dot;
+
+:frame
+	time + =z
+
+	fragcoord resolution / 8 * 4 -
+	z .0125 8 .1 + *
+	ddot *
+	ddot .1 / atan *
+
+	ddot =v cos * z z 1.5 + v 8 1.5 * pow / abs sqrt .05 mod .1 / tan
+
+	dup \/ sin swap 1 swap .y / cos * z .2 * 1 min * .2 * =v
+	v 0 > if
+		v .8 / v v 1.5 * 1
+	else
+		v -.2 * v .3 * z sin * v -.2 * 1
+	then
+	vec4
+;
+
+[-.1 -.05 0 .05 .1] /frame \+ color

@@ -70,7 +70,7 @@ $defaultTransform = shadermin %q{
 	}
 }
 
-def build(fn, png=false)
+def build(fn, png=false, svg=false)
 	$i = 0
 	file = File.read(fn)
 	
@@ -140,12 +140,12 @@ def build(fn, png=false)
 		end
 	end
 	
-	script = scriptmin ERB.new(File.read('script.jst')).result(binding)
+	script = scriptmin ERB.new(File.read(if svg then 'scriptsvg.jst' else 'script.jst' end)).result(binding)
 	
-	if not png
-		doc = %Q{<body style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
-	else
+	if png or svg
 		doc = script
+	else
+		doc = %Q{<body style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
 	end
 	puts "Size: #{doc.size} bytes"
 	doc
@@ -198,12 +198,23 @@ def buildPng(fn)
 	data
 end
 
+require 'zlib'
+def buildSvg(fn)
+	data = build fn, false, true
+	svg = '<?xml version="1.0" standalone="yes"?><svg xmlns = "http://www.w3.org/2000/svg"><foreignObject width="100%" height="100%"><canvas id="0" onload="' + data + '"/></foreignObject></svg>'
+	puts "SVG size: #{svg.size}" # -script.size
+	
+	csvg = Zlib::Deflate.deflate svg, Zlib::BEST_COMPRESSION
+	puts "Compressed size: #{csvg.bytes.to_a.size}"
+	return csvg
+end
+
 if ARGV.size == 0
 	puts 'Usage: ruby windowpane.rb <demo.wpd> [<output.html> [png]]'
 	puts 'If you leave off the output file, Windowpane operates in server mode on port 4567'
 elsif ARGV.size == 1
 	require 'sinatra'
-	require 'sinatra/reloader'
+	#require 'sinatra/reloader'
 	
 	get '/' do
 		build ARGV[0]
@@ -211,6 +222,11 @@ elsif ARGV.size == 1
 
 	get '/png' do
 		buildPng ARGV[0]
+	end
+	
+	get '/svg' do
+		headers 'Content-Type' => 'image/svg+xml', 'Content-Encoding' => 'deflate'
+		buildSvg ARGV[0]
 	end
 
 	get '/favicon.ico' do end

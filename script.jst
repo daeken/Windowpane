@@ -8,7 +8,7 @@ s = function(s, t) {
 
 <% if png %>
 with(document.body) {
-	<% if drawMulti and png %>q=<% end %>style.margin=0, innerHTML='<canvas></canvas><h3 style=position:absolute;bottom:0px;color:#fff;opacity:0.5>1k should be enough for anybody.', x = 34962, z = firstChild;
+	<% if drawMulti and png %>q=<% end %>style.margin=0, innerHTML='<canvas></canvas><% if false %><h3 style=position:absolute;bottom:0px;color:#fff;opacity:0.5>1k should be enough for anybody.<% end %>', x = 34962, z = firstChild;
 <% else %>
 t = top, x = 34962, b = document.body, z = b.firstChild<% if drawMulti %>, q = 0<% end %>;
 <% end %>

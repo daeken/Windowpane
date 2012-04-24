@@ -1,8 +1,8 @@
 s = function(s, t) {
-	deS(y = eeS(35632+t), s);
-	mpeS(y)<% if errorChecking %>;
-	if(!eSdeP(y, 35713))
-		alert(eSde(y))
+	deS(f = eeS(35632+t), s);
+	mpeS(f)<% if errorChecking %>;
+	if(!eSdeP(f, 35713))
+		alert(eSde(f))
 	<% end %>
 };
 
@@ -22,7 +22,7 @@ for(k in g = z.getContext('experimental-webgl'))
 
 <% programs.each do |p, k| %>
 	<% k.each_index do |xi| x = k[xi] %>
-		S(<% if xi == 0 %> <%= p %> = eeP() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 0)||y' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 1)||y' else x end %>);
+		S(<% if xi == 0 %> <%= p %> = eeP() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 0)||f' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 1)||f' else x end %>);
 	<% end %>
 	kP(<%= p %>);
 	<% if errorChecking %>
@@ -48,14 +48,14 @@ s = function() {
 		<% end %>
 	);
 	w(4, beVeexb(j), 6)<% if drawMulti %>;
-	for(k in t) if(/[tz]..q/.test(k)) t[k](s)
+	for(k in t) /[tz]..q/.test(k) && t[k](s)
 	<% end %>
 };
 
 (t.onresize = function() {
 	viewport(
-		dB(x = 34962, v = eeB()), 
-		ffe(x, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), x+82), 
+		dB(g = 34962, v = eeB()), 
+		ffe(g, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), g+82), 
 		<% if not png %> r = <% end %>z.width = (z.style.width = <% unless png %>b.<% end %>clientWidth)*2,
 		<% if not png %> f = <% end %>z.height = (z.style.height = <% unless png %>b.<% end %>clientHeight)*2
 	)<% if not drawMulti %>;

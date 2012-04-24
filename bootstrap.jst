@@ -1,4 +1,3 @@
-with(document.createElement('canvas')) p = width = <%=data.size*4%>, (c=getContext('2d')).drawImage(this,e='',0);
-while(p)
+for(p = q.width = <%=data.size*4%>, (c=q.getContext('2d')).drawImage(this,0,e=0);p;)
 	e += String.fromCharCode(c.getImageData(0,0,p,1).data[p-=4]);
 (t=top).eval(e)

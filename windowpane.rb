@@ -172,14 +172,14 @@ class ChunkyPNG::Chunk::End
 end
 
 def buildPng(fn)
-	data = build fn, true
+	data = ';' + build(fn, true)
 	fp = File.open('magic.js', 'wb')
 	fp.write(data)
 	fp.close
 	data = data.reverse.chars.to_a.map { |x| x.ord }
 	script = scriptmin(ERB.new(File.read('bootstrap.jst')).result(binding))
 	puts "Script size: #{script.size} bytes"
-	$magic = html = '<img onload=' + script + ' sr'
+	$magic = html = '<canvas id=q><img onload=' + script + ' sr'
 	puts "HTML size: #{html.size-script.size} bytes"
 	png = ChunkyPNG::Image.new data.size, 1
 	#png.metadata['foo'] = html

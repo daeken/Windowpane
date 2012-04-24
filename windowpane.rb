@@ -159,6 +159,15 @@ class MagicChunk < ChunkyPNG::Chunk::Generic
 end
 
 class ChunkyPNG::Chunk::ImageData
+	def self.split_in_chunks(data, level = Zlib::DEFAULT_COMPRESSION, chunk_size = 2147483647)
+		#streamdata = Zlib::Deflate.deflate(data, level)
+		z = Zlib::Deflate.new(Zlib::BEST_COMPRESSION, 15, Zlib::MAX_MEM_LEVEL, Zlib::DEFAULT_STRATEGY)
+		streamdata = z.deflate data, Zlib::FULL_FLUSH
+		z.close
+		$csize = streamdata.bytes.to_a.size
+		# TODO: Split long streamdata over multiple chunks
+		[ ChunkyPNG::Chunk::ImageData.new('IDAT', streamdata) ]
+	end
 	def write_with_crc(io, content)
 		#io << 'c=#>' << type << content # [content.length].pack('N')
 		io << [content.length].pack('N') << type << content
@@ -195,18 +204,29 @@ def buildPng(fn)
 	fp.close
 	tsize = data.bytes.to_a.size
 	puts "Other PNG size: #{tsize-html.size} bytes"
+	puts "IDAT size: #{$csize}"
+	puts "Total PNG overhead: #{tsize-$csize}"
 	puts "Total compressed size: #{tsize} bytes"
 	data
 end
 
 require 'zlib'
-def buildSvg(fn)
-	data = build fn, false, true
-	svg = '<?xml version="1.0" standalone="yes"?><svg xmlns = "http://www.w3.org/2000/svg"><foreignObject width="100%" height="100%"><canvas id="0" onload="' + data + '"/></foreignObject></svg>'
-	puts "SVG size: #{svg.size}" # -script.size
-	
-	csvg = Zlib::Deflate.deflate svg, Zlib::BEST_COMPRESSION
-	puts "Compressed size: #{csvg.bytes.to_a.size}"
+def buildSvgz(fn)
+	html = build ARGV[0]
+	puts "HTML size: #{html.size}"
+	puts "HTML compressed solo: #{compress(html).bytes.to_a.size}"
+	enc = html.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/"/, '&quot;').gsub(/\\/, "\\\\\\\\").gsub(/'/, "\\\\'")
+	puts "Encoded size: #{enc.size}"
+	out = '<svg xmlns="http://www.w3.org/2000/svg" onload="location=\'data:text/html,' + enc + '\'"/>'
+	puts "SVG size: #{out.size}"
+	out = compress out
+	puts "Compressed size: #{out.bytes.to_a.size}"
+
+	out
+end
+
+def compress(data)
+	csvg = Zlib::Deflate.deflate data, Zlib::BEST_COMPRESSION
 	return csvg
 end
 
@@ -226,14 +246,25 @@ elsif ARGV.size == 1
 	end
 	
 	get '/svg' do
+		headers 'Content-Type' => 'image/svg+xml'
+
+		html = build ARGV[0]
+		enc = html.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/"/, '&quot;').gsub(/\\/, "\\\\\\\\").gsub(/'/, "\\\\'")
+
+		'<svg xmlns="http://www.w3.org/2000/svg" onload="window.location=\'data:text/html,' + enc + '\'"/>'
+	end
+
+	get '/svgz' do
 		headers 'Content-Type' => 'image/svg+xml', 'Content-Encoding' => 'deflate'
-		buildSvg ARGV[0]
+		buildSvgz ARGV[0]
 	end
 
 	get '/favicon.ico' do end
 else
 	if ARGV.size > 2 and ARGV[2] == 'png'
 		File.open(ARGV[1], 'wb').write(buildPng ARGV[0])
+	elsif ARGV.size > 2 and ARGV[2] == 'svgz'
+		File.open(ARGV[1], 'wb').write(buildSvgz ARGV[0])
 	else
 		File.open(ARGV[1], 'wb').write(build ARGV[0])
 	end

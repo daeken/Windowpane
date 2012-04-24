@@ -160,8 +160,9 @@ end
 
 class ChunkyPNG::Chunk::ImageData
 	def write_with_crc(io, content)
-		io << 'c=#>' << type << content # [content.length].pack('N')
-		#io << $magic
+		#io << 'c=#>' << type << content # [content.length].pack('N')
+		io << [content.length].pack('N') << type << content
+		io << $magic
 	end
 end
 
@@ -179,7 +180,7 @@ def buildPng(fn)
 	data = data.reverse.chars.to_a.map { |x| x.ord }
 	script = scriptmin(ERB.new(File.read('bootstrap.jst')).result(binding))
 	puts "Script size: #{script.size} bytes"
-	$magic = html = '<canvas id=q><img onload=' + script + ' sr'
+	$magic = html = '<canvas id=q><img onload=' + script + ' src=#>'
 	puts "HTML size: #{html.size-script.size} bytes"
 	png = ChunkyPNG::Image.new data.size, 1
 	#png.metadata['foo'] = html
@@ -187,7 +188,7 @@ def buildPng(fn)
 		png[i, 0] = ChunkyPNG::Color.grayscale(data[i])
 	end
 	ds = png.to_datastream :color_mode => ChunkyPNG::COLOR_GRAYSCALE
-	ds.other_chunks << MagicChunk.new('jawh', html)
+	#ds.other_chunks << MagicChunk.new('jawh', html)
 	data = ds.to_blob.to_s
 	fp = File.open('test.png', 'wb')
 	fp.write(data)

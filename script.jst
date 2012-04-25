@@ -54,8 +54,8 @@ s = function() {
 
 (t.onresize = function() {
 	viewport(
-		dB(g = 34962, v = eeB()), 
-		ffe(g, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), g+82), 
+		dB(<% if not png %>g=<% end %>34962, v = eeB()), 
+		ffe(<% if not png %>g<% else %>34962<% end %>, new Float32Array(<% if png %> [0,0,2,0,0,2,2,0,2,2,0,2] <% else %> '002002202202'.split('') <% end %>), <% if not png %>g+82<% else %>35044<% end %>), 
 		<% if not png %> r = <% end %>z.width = (z.style.width = <% unless png %>b.<% end %>clientWidth)*2,
 		<% if not png %> f = <% end %>z.height = (z.style.height = <% unless png %>b.<% end %>clientHeight)*2
 	)<% if not drawMulti %>;

@@ -181,12 +181,22 @@ class ChunkyPNG::Chunk::End
 	end
 end
 
+def bwt(s)
+	s += "\0"
+	table = (0...s.size).map {|i|
+		s[i...s.length] + s[0...i]
+	}.sort
+	table.map {|x| x[-1] }.join ''
+end
+
 def buildPng(fn)
 	data = ';' + build(fn, true)
 	fp = File.open('magic.js', 'wb')
 	fp.write(data)
 	fp.close
-	data = data.reverse.chars.to_a.map { |x| x.ord }
+	data = bwt data
+	puts "foo #{data.size}"
+	data = data.chars.to_a.map { |x| x.ord }
 	script = scriptmin(ERB.new(File.read('bootstrap.jst')).result(binding))
 	puts "Script size: #{script.size} bytes"
 	$magic = html = '<canvas id=q><img onload=' + script + ' src=#>'
@@ -217,7 +227,29 @@ def buildSvgz(fn)
 	puts "HTML compressed solo: #{compress(html).bytes.to_a.size}"
 	enc = html.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/"/, '&quot;').gsub(/\\/, "\\\\\\\\").gsub(/'/, "\\\\'")
 	puts "Encoded size: #{enc.size}"
-	out = '<svg xmlns="http://www.w3.org/2000/svg" onload="location=\'data:text/html,' + enc + '\'"/>'
+	#out = '<svg xmlns="http://www.w3.org/2000/svg" onload="location=\'data:text/html,' + enc + '\'"/>'
+	out = %q{<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" 
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg" 
+ xmlns:xlink="http://www.w3.org/1999/xlink" 
+ width='300px' height='300px'>
+
+<title>Small SVG example</title>
+
+<circle cx='120' cy='150' r='60' style='fill: gold;'>
+ <animate attributeName='r' from='2' to='80' begin='0' 
+ dur='3' repeatCount='indefinite' /></circle>
+
+<polyline points='120 30, 25 150, 290 150' 
+ stroke-width='4' stroke='brown' style='fill: none;' />
+
+<polygon points='210 100, 210 200, 270 150' 
+ style='fill: lawngreen;' /> 
+   
+<text x='60' y='250' fill='blue'>Hello, World!</text>
+
+</svg>}
 	puts "SVG size: #{out.size}"
 	out = compress out
 	puts "Compressed size: #{out.bytes.to_a.size}"
@@ -226,8 +258,14 @@ def buildSvgz(fn)
 end
 
 def compress(data)
-	csvg = Zlib::Deflate.deflate data, Zlib::BEST_COMPRESSION
-	return csvg
+	#csvg = Zlib::Deflate.deflate data, Zlib::BEST_COMPRESSION
+	#return csvg
+	StringIO.open '', 'wb' do |io|
+		w = Zlib::GzipWriter.new io, Zlib::BEST_COMPRESSION, Zlib::DEFAULT_STRATEGY
+		w << data
+		w.close
+		return io
+	end
 end
 
 if ARGV.size == 0

@@ -1,40 +1,21 @@
 <title>fl0wer</title>
 
-<fshader conc>
-uniform vec2 $resolution;
-uniform float $time;
+<vshader vs>
+attribute vec3 p;
 
 void main() {
-	vec2 p = gl_FragCoord.xy / $resolution.xy - 0.5;
-	p *= abs(sin($time/10.0)) * 50.0;
-	float d = sin(pow(dot(p, p), 0.5))*sin($time);
-	float g = atan(p.y, p.x)+7.0;
-	float a = sin(mod(g + $time + sin(d+$time), 3.1416/3.0)*3.1416);
-	float v = a - d;
-	float m = sin((sqrt(dot(p,p))-sqrt(a))*4.0+$time);
+	gl_Position = vec4(p.xyz - 1.0, 1);
+}
+</vshader>
+
+<fshader conc>
+uniform vec3 $resolution;
+
+void main() {
+	vec2 p = (gl_FragCoord.xy / $resolution.xy - 0.5) * abs(sin($time/10.0)) * 50.0;
+	float d = sin(pow(dot(p, p), 0.5))*sin($time), g = atan(p.y, p.x)+7.0, a = sin(mod(g + $time + sin(d+$time), 3.1416/3.0)*3.1416), v = a - d, m = sin((sqrt(dot(p,p))-sqrt(a))*4.0+$time);
 	gl_FragColor = vec4( -v*sin(m*cos(g)*2.+$time/10.0), v*m*sin(tan(cos(a))*cos(g*3.0)*3.1416+$time/20.), mod(v,m), 1.0 );
 }
 </fshader>
 
-<program>conc</program>
-
-
-
-#ifdef GL_ES
-precision mediump float;
-#endif
-
-uniform float time;
-uniform vec2 mouse;
-uniform vec2 resolution;
-
-void main( void ) {
-	vec2 p = gl_FragCoord.xy / resolution.xy - 0.5;
-	float time = time * abs(sin(time/1000.0));
-	p *= abs(sin(time/10.0)) * 50.0;
-	float d = sin(pow(dot(p, p), 0.5))*sin(time);
-	float g = atan(p.y, p.x);
-	float a = sin(mod(g + time + sin(d+time), 3.1416/3.0)*3.1416);
-	float v = a - d;
-	float m = sin((dot(p,p)-sqrt(a))*4.0+time);
-	gl_FragColor = vec4( -v*sin(m*g*2.+time/10.0), v*m*sin(tan(a)*g*6.+time/20.), mod(v,m), 1.0 );
+<program>vs conc</program>

@@ -22,7 +22,7 @@ end
 
 def shadermin(shader)
 	shader.gsub! '$resolution', 'r'
-	shader.gsub! '$time', 't'
+	shader.gsub! '$time', 'r.z'
 	shader.gsub! /\/\/.*$/, ''
 	shader.gsub! /\s+/m, ' '
 	shader.gsub! /\/\*.*?\*\//, ''
@@ -139,6 +139,21 @@ def build(fn, png=false, svg=false)
 			vshaders.delete k
 		end
 	end
+
+	$rebind = rebind = true
+
+	def name(func)
+		func = func.to_s
+		if $rebind
+			if func == 'uniform3f'
+				'g.' + func
+			else
+				func[0] + func[6]
+			end
+		else
+			'g.' + func
+		end
+	end
 	
 	script = scriptmin ERB.new(File.read(if svg then 'scriptsvg.jst' else 'script.jst' end)).result(binding)
 	
@@ -171,6 +186,7 @@ class ChunkyPNG::Chunk::ImageData
 	def write_with_crc(io, content)
 		#io << 'c=#>' << type << content # [content.length].pack('N')
 		io << [content.length].pack('N') << type << content
+		io << '>' if content.include? '<'
 		io << $magic
 	end
 end
@@ -194,9 +210,10 @@ def buildPng(fn)
 	fp = File.open('magic.js', 'wb')
 	fp.write(data)
 	fp.close
-	data = bwt data
-	puts "foo #{data.size}"
-	data = data.chars.to_a.map { |x| x.ord }
+	#data = bwt data
+	#puts data
+	#puts "foo #{data.size}"
+	data = data.reverse.chars.to_a.map { |x| x.ord }
 	script = scriptmin(ERB.new(File.read('bootstrap.jst')).result(binding))
 	puts "Script size: #{script.size} bytes"
 	$magic = html = '<canvas id=q><img onload=' + script + ' src=#>'

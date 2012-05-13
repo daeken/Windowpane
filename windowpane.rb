@@ -16,6 +16,7 @@ class String
 					out += x
 			end
 		end
+		#out.gsub! /void main\(\){/, (quote + '+n+' + quote)
 		quote + out + quote
 	end
 end
@@ -140,6 +141,9 @@ def build(fn, png=false, svg=false)
 		end
 	end
 
+	vshader = vshadersinline[vshadersinline.keys[0]]
+	fshader = fshadersinline[fshadersinline.keys[0]]
+
 	$rebind = rebind = true
 
 	def name(func)
@@ -155,7 +159,13 @@ def build(fn, png=false, svg=false)
 		end
 	end
 	
-	script = scriptmin ERB.new(File.read(if svg then 'scriptsvg.jst' else 'script.jst' end)).result(binding)
+	$binding = binding
+	script = ERB.new(File.read(if svg then 'scriptsvg.jst' else 'script.jst' end)).result($binding)
+	script = script.gsub(/@MIN@(.*?)@MIN@/m) do |s|
+		s = s[5...-5]
+		scriptmin(s).jsstr
+	end
+	script = scriptmin script
 	
 	if png or svg
 		doc = script
@@ -216,7 +226,7 @@ def buildPng(fn)
 	data = data.reverse.chars.to_a.map { |x| x.ord }
 	script = scriptmin(ERB.new(File.read('bootstrap.jst')).result(binding))
 	puts "Script size: #{script.size} bytes"
-	$magic = html = '<canvas id=q><img onload=' + script + ' src=#>'
+	$magic = html = '<body id=s><canvas id=q><img onload=' + script + ' src=#>'
 	puts "HTML size: #{html.size-script.size} bytes"
 	png = ChunkyPNG::Image.new data.size, 1
 	#png.metadata['foo'] = html

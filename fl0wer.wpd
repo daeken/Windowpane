@@ -4,7 +4,7 @@
 attribute vec3 p;
 
 void main() {
-	gl_Position = vec4(p.xyz - 1.0, 1);
+	gl_Position = vec4(p - 1.0, 1);
 }
 </vshader>
 
@@ -12,9 +12,9 @@ void main() {
 uniform vec3 $resolution;
 
 void main() {
-	vec2 p = (gl_FragCoord.xy / $resolution.xy - 0.5) * abs(sin($time/10.0)) * 50.0;
-	float d = sin(pow(dot(p, p), 0.5))*sin($time), g = atan(p.y, p.x)+7.0, a = sin(mod(g + $time + sin(d+$time), 3.1416/3.0)*3.1416), v = a - d, m = sin((sqrt(dot(p,p))-sqrt(a))*4.0+$time);
-	gl_FragColor = vec4( -v*sin(m*cos(g)*2.+$time/10.0), v*m*sin(tan(cos(a))*cos(g*3.0)*3.1416+$time/20.), mod(v,m), 1.0 );
+	vec3 p = (gl_FragCoord.xyz / $resolution - 0.5) * abs(sin($time/10.0)) * 50.0;
+	float d = sin(length(p)+$time), a = sin(mod(atan(p.y, p.x) + $time + sin(d+$time), 3.1416/3.)*3.), v = a + d, m = sin(length(p)*4.0-a+$time);
+	gl_FragColor = vec4(-v*sin(m*sin(-d)+$time*.1), v*m*sin(tan(sin(-a))*sin(-a*3.)*3.+$time*.5), mod(v,m), $time);
 }
 </fshader>
 

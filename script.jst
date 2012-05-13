@@ -1,39 +1,36 @@
-s = function(s, t) {
-	<%=name :shaderSource %>(f = <%=name :createShader %>(35632+t), s);
-	<%=name :compileShader %>(f)
-};
-
-with(document.body) {
-	q=style.margin=0, t = top, innerHTML='<canvas id=z>';
+s.innerHTML='<canvas id=z>';
 
 for(k in g = z.getContext('experimental-webgl'))
-	t[k[0]+k[6]] = g[k].bind && g[k].bind(g);
+	g[k[s.style.margin = 0]+k[6]] = g[k];
 
-<% programs.each do |p, k| %>
-	<% k.each_index do |xi| x = k[xi] %>
-		<%=name :attachShader %>(<% if xi == 0 %> <%= p %> = <%=name :createProgram %>() <% else %> <%= p %> <% end %>, <%= if fshadersinline.include? x then 's(' + fshadersinline[x].jsstr + ', 0)||f' elsif vshadersinline.include? x then 's(' + vshadersinline[x].jsstr + ', 1)||f' else x end %>);
-	<% end %>
-	<%=name :linkProgram %>(<%= p %>);
-<% end %>
+with(g)
+	for(q = 2, s = <%=name :createProgram %>(); q; )
+		<%=name :shaderSource %>(
+			f = <%=name :createShader %>(35632+--q), 
+			q ? <%= vshader.jsstr %> : <%= fshader.jsstr %>
+		), 
+		<%=name :compileShader %>(f), 
+		<%=name :attachShader %>(s, f), 
+		<%=name :linkProgram %>(s);
 
-(t.onresize = s = function() {
-	<%=name :viewport %>(
-		<%=name :bindBuffer %>(34962, v = <%=name :createBuffer %>()), 
-		<%=name :bufferData %>(34962, new Float32Array([0,0,2,0,0,2,2,0,2,2,0,2]), 35044), 
-		z.width = (z.style.width = clientWidth)*2,
-		z.height = (z.style.height = clientHeight)*2
-	);
-	<%=name :vertexAttribPointer %>(
-		0, 
-		2, 
-		5126, 
-		<%=name :useProgram %>(<%=remap['main'] %>), 
-		<%=name :uniform3f %>(<%=name :getUniformLocation %>(<%=remap['main'] %>, 'r'), z.width, z.height, ((m=new Date)-(q=q||m)) / 1e3), 
-		0
-	);
-	<%=name :drawArrays %>(4, <%=name :enableVertexAttribArray %>(<%=name :getAttribLocation %>(<%=remap['main'] %>, 'p')), 6);
-	setTimeout(s, 16)
-})()
-<% if png %>
-}
-<% end %>
+setInterval(@MIN@
+	with(g)
+		<%=name :vertexAttribPointer %>(
+			<%=name :viewport %>(
+				<%=name :bindBuffer %>(34962, <%=name :createBuffer %>()), 
+				<%=name :bufferData %>(34962, new Float32Array([0,0,2,0,0,2,2,0,2,2,0,2]), 35044), 
+				z.width = innerWidth,
+				z.height = innerHeight
+			),
+			2, 
+			5126, 
+			<%=name :useProgram %>(s), 
+			<%=name :uniform3f %>(<%=name :getUniformLocation %>(s, 'r'), z.width, z.height, ((m=new Date)-(q=q||m)) / 5126), 
+			0
+		), 
+		<%=name :drawArrays %>(
+			4, 
+			<%=name :enableVertexAttribArray %>(<%=name :getAttribLocation %>(s, 'p')), 
+			6
+		)
+@MIN@)

@@ -4,9 +4,11 @@ require 'chunky_png'
 require 'pp'
 
 class String
-	def jsstr
+	def jsstr(quote=nil)
 		out = ''
-		quote = self.include?("'") ? '"' : "'"
+        if not quote
+		    quote = self.include?("'") ? '"' : "'"
+        end
 		self.each_char do |x|
 			case x
 				when "\n" then out += '\n'
@@ -163,7 +165,7 @@ def build(fn, png=false, svg=false)
 	script = ERB.new(File.read(if svg then 'scriptsvg.jst' else 'script.jst' end)).result($binding)
 	script = script.gsub(/@MIN@(.*?)@MIN@/m) do |s|
 		s = s[5...-5]
-		scriptmin(s).jsstr
+		scriptmin(s).jsstr("'")
 	end
 	script = scriptmin script
 	

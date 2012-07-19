@@ -170,7 +170,7 @@ def build(fn, png=false, svg=false)
 	if png or svg
 		doc = script
 	else
-		doc = %Q{<body style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
+		doc = %Q{<body id=s style=margin:0;overflow:hidden onload="#{script}"><canvas><title>#{title}}
 	end
 	puts "Size: #{doc.size} bytes"
 	doc
